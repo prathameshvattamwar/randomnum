@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shuffle Numbers</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #ff758c, #ff7eb3);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        #number-display {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            color: #ff758c;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            min-width: 100px;
+        }
+        button {
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        #shuffle-btn {
+            background: #ff4757;
+            color: white;
+        }
+        #shuffle-btn:hover {
+            background: #e84118;
+        }
+        #reset-btn {
+            background: #3742fa;
+            color: white;
+            display: none;
+        }
+        #reset-btn:hover {
+            background: #192a56;
+        }
+        #used-numbers {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            max-width: 600px;
+        }
+        .number-box {
+            background: white;
+            color: #ff4757;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <h1>Shuffle Random Number</h1>
+    <div id="number-display">?</div>
+    <button id="shuffle-btn">Shuffle</button>
+    <button id="reset-btn">Reset</button>
+    <div id="used-numbers"></div>
+
+    <script>
+        // Get stored numbers from local storage or initialize an empty array
+        let usedNumbers = JSON.parse(localStorage.getItem('usedNumbers')) || [];
+
+        // Select elements
+        const display = document.getElementById("number-display");
+        const shuffleBtn = document.getElementById("shuffle-btn");
+        const resetBtn = document.getElementById("reset-btn");
+        const usedNumbersDiv = document.getElementById("used-numbers");
+
+        // Function to update the UI with used numbers
+        function updateUsedNumbersDisplay() {
+            usedNumbersDiv.innerHTML = usedNumbers.map(num => `<span class="number-box">${num}</span>`).join("");
+        }
+
+        // Function to generate a random number between 1 and 54, ensuring no repetition
+        function generateUniqueRandomNumber() {
+            if (usedNumbers.length >= 54) {
+                shuffleBtn.style.display = "none"; // Hide shuffle button when all numbers are drawn
+                resetBtn.style.display = "inline-block"; // Show reset button
+                return;
+            }
+
+            let randomNumber;
+            do {
+                randomNumber = Math.floor(Math.random() * 54) + 1;
+            } while (usedNumbers.includes(randomNumber));
+
+            usedNumbers.push(randomNumber);
+            localStorage.setItem('usedNumbers', JSON.stringify(usedNumbers));
+
+            display.textContent = randomNumber;
+            updateUsedNumbersDisplay();
+        }
+
+        // Reset function to clear all numbers
+        function resetGame() {
+            usedNumbers = [];
+            localStorage.removeItem('usedNumbers');
+            display.textContent = "?";
+            updateUsedNumbersDisplay();
+            shuffleBtn.style.display = "inline-block";
+            resetBtn.style.display = "none";
+        }
+
+        // Event Listeners
+        shuffleBtn.addEventListener("click", generateUniqueRandomNumber);
+        resetBtn.addEventListener("click", resetGame);
+
+        // Initialize UI
+        updateUsedNumbersDisplay();
+        if (usedNumbers.length >= 54) {
+            shuffleBtn.style.display = "none";
+            resetBtn.style.display = "inline-block";
+        }
+    </script>
+</body>
+</html>
